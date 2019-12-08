@@ -1,7 +1,8 @@
-CC = gcc-5 
-CXX = g++-5 -std=gnu++0x
+CC = gcc-7
+CXX = g++-7 -std=gnu++0x
 DEPSDIR := masstree/.deps
-DEPCFLAGS = -MD -MF $(DEPSDIR)/$*.d -MP
+#DEPCFLAGS = -MD -MF $(DEPSDIR)/$*.d -MP
+DEPCFLAGS =
 MEMMGR = -lpapi -ltcmalloc_minimal
 CFLAGS = -g -O3 -Wno-invalid-offsetof -mcx16 -DNDEBUG -DBWTREE_NODEBUG $(DEPCFLAGS) -include masstree/config.h
 
@@ -17,7 +18,7 @@ SL_DIR=./nohotspot-skiplist
 SL_OBJS=$(patsubst %.cpp,%.o,$(wildcard $(SL_DIR)/*.cpp))
 $(info skip list object files: $(SL_OBJS))
 
-SNAPPY = /usr/lib/libsnappy.so.1.3.0
+SNAPPY = /usr/lib/x86_64-linux-gnu/libsnappy.so.1.1.7
 
 all: workload
 
@@ -48,6 +49,9 @@ workload_string.o: workload_string.cpp microbench.h index.h util.h ./masstree/mt
 
 workload_string: skiplist-clean workload_string.o bwtree.o artolc.o ./masstree/mtIndexAPI.a $(SL_OBJS)
 	$(CXX) $(CFLAGS) -o workload_string workload_string.o bwtree.o artolc.o  $(SL_OBJS) masstree/mtIndexAPI.a $(MEMMGR) -lpthread -lm -ltbb
+
+artree_ex1: artree_ex1.cpp artolc.o
+	$(CXX) $(CFLAGS) -o artree_ex1 artree_ex1.cpp artolc.o -lpthread -lm -ltbb
 
 bwtree.o: ./BwTree/bwtree.h ./BwTree/bwtree.cpp
 	$(CXX) $(CFLAGS) -c -o bwtree.o ./BwTree/bwtree.cpp
